@@ -30,9 +30,9 @@ __global__ void cudaBlurFilter(int width, int height, unsigned char* in_image, u
                     
                     int currentoffset = (offset+ox+oy*width)*3;
                     
-                    out_red += in_image[currentoffset]; 
-                    out_green += in_image[currentoffset+1];
-                    out_blue += in_image[currentoffset+2];
+                    red += in_image[currentoffset]; 
+                    green += in_image[currentoffset+1];
+                    blue += in_image[currentoffset+2];
                     
                     fields_count++;
                 }
@@ -51,7 +51,8 @@ __global__ void cudaBlurFilter(int width, int height, unsigned char* in_image, u
 void filter(int width, int height, unsigned char* in_image, unsigned char* out_image) {
 
     /*malloc two arrays for images on device*/
-    unsigned char* dev_input, dev_output;
+    unsigned char* dev_input;
+	unsigned char* dev_output;
     cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char));
     cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char));
 
