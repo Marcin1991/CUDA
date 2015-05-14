@@ -51,7 +51,7 @@ void filter (unsigned char* input_image, unsigned char* output_image, int width,
 
     cudaMemcpy(output_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost );
 
-    gcudaFree(dev_input);
+    cudaFree(dev_input);
     cudaFree(dev_output);
 
 }
