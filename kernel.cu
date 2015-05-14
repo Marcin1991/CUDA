@@ -1,5 +1,4 @@
 #include "kernel.h"
-#include "helper.h"
 #include <iostream>
 #include <cmath>
 
