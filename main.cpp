@@ -2,7 +2,6 @@
 #include "kernel.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include <functional>
 #include <iostream>
 #include <cstdlib>
 
