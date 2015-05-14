@@ -3,10 +3,15 @@
 #include <cmath>
 
 #define FILTER_SIZE 5
+#define BLOCK_DIMENSION 512
 
 /*Kernel blur function -> box blur used defined size matrix*/
+/*It's count average of pixel neighbours*/
+/*The same for red value, green value and blue value*/
+
 __global__ void cudaBlurFilter(int width, int height, unsigned char* in_image, unsigned char* out_image) {
 
+    /*offset of current pixel*/
     unsigned int offset = blockIdx.x*blockDim.x + threadIdx.x;
     
     int x = offset % width;
@@ -16,9 +21,9 @@ __global__ void cudaBlurFilter(int width, int height, unsigned char* in_image, u
 
     if(offset < width*height) {
 
-        float red = 0;
-        float green = 0;
-        float blue = 0;
+        double red = 0;
+        double green = 0;
+        double blue = 0;
         
         int fields_count = 0;
         
@@ -30,6 +35,7 @@ __global__ void cudaBlurFilter(int width, int height, unsigned char* in_image, u
                     
                     int currentoffset = (offset+ox+oy*width)*3;
                     
+					//update sum of pixel values
                     red += in_image[currentoffset]; 
                     green += in_image[currentoffset+1];
                     blue += in_image[currentoffset+2];
@@ -57,15 +63,15 @@ void filter(int width, int height, unsigned char* in_image, unsigned char* out_i
     cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char));
 
     /*copy data from host to device memory*/
-    cudaMemcpy( dev_input, in_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice );
+    cudaMemcpy( dev_input, in_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice);
  
-    dim3 blockDims(512,1,1);
+    dim3 blockDims(BLOCK_DIMENSION,1,1);
     dim3 gridDims((unsigned int) ceil((double)(width*height*3/blockDims.x)), 1, 1 );
 
     cudaBlurFilter<<<gridDims, blockDims>>>(width, height, dev_input, dev_output); 
 
     /*copy results to host*/
-    cudaMemcpy(out_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost );
+    cudaMemcpy(out_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost);
 
     cudaFree(dev_input);
     cudaFree(dev_output);
