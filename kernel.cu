@@ -1,5 +1,5 @@
-#include "kernels.h"
-#include "helpers.h"
+#include "kernel.h"
+#include "helper.h"
 #include <iostream>
 #include <cmath>
 
@@ -39,21 +39,21 @@ void filter (unsigned char* input_image, unsigned char* output_image, int width,
 
     unsigned char* dev_input;
     unsigned char* dev_output;
-    getError(cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char)));
-    getError(cudaMemcpy( dev_input, input_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice ));
+    
+    cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char);
+    cudaMemcpy( dev_input, input_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice );
  
-    getError(cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char)));
+    cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char));
 
     dim3 blockDims(512,1,1);
     dim3 gridDims((unsigned int) ceil((double)(width*height*3/blockDims.x)), 1, 1 );
 
     blur<<<gridDims, blockDims>>>(dev_input, dev_output, width, height); 
 
+    cudaMemcpy(output_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost );
 
-    getError(cudaMemcpy(output_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost ));
-
-    getError(cudaFree(dev_input));
-    getError(cudaFree(dev_output));
+    gcudaFree(dev_input);
+    cudaFree(dev_output);
 
 }
 
