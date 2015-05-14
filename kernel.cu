@@ -39,7 +39,7 @@ void filter (unsigned char* input_image, unsigned char* output_image, int width,
     unsigned char* dev_input;
     unsigned char* dev_output;
     
-    cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char);
+    cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char));
     cudaMemcpy( dev_input, input_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice );
  
     cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char));
