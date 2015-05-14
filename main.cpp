@@ -1,15 +1,16 @@
-#include <iostream>
-#include <cstdlib>
 #include "lodepng.h"
+#include "kernel.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "kernels.h"
 #include <functional>
+#include <iostream>
+#include <cstdlib>
 
 
 int main(int argc, char** argv) {
+
     if(argc != 3) {
-        std::cout << "Run with input and output image filenames." << std::endl;
+        std::cout << "Input or output doesn't found." << std::endl;
         return 0;
     }
 
