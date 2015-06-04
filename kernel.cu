@@ -59,16 +59,61 @@ void filter(int width, int height, unsigned char* in_image, unsigned char* out_i
     /*malloc two arrays for images on device*/
     unsigned char* dev_input;
 	unsigned char* dev_output;
+
+	int num_devices, device;
+	
+	int blockNum;
+	int threadNum;
+
+	//device selection
+	cudaGetDeviceCount(&num_devices);
+	if (num_devices > 1) {
+		  int max_multiprocessors = 0, max_device = 0;
+		  for (device = 0; device < num_devices; device++) {
+				  cudaDeviceProp properties;
+				  cudaGetDeviceProperties(&properties, device);
+				  std::cout<<"device: "<<device<<" with multiprocesors: " << properties.multiProcessorCount << std::endl;
+				  if (max_multiprocessors < properties.multiProcessorCount) {
+						  max_multiprocessors = properties.multiProcessorCount;
+						  max_device = device;
+				  }
+		  }
+		  cudaSetDevice(max_device);
+		  std::cout<<"choosed one: "<<max_device << std::endl;
+		  
+		  std::cout<<"Would you like to change it? [y/n]"<<std::endl;
+		  char option;
+		  std::cin>>option;
+		  int d = max_device;
+		  if(option == 'y'){
+			std::cout<<"type device number"<<std::endl;
+			std::cin>>d;
+			std::cout<<"setting device: "<<d<<std::endl;
+			cudaSetDevice(d);
+		  }
+		  
+		  cudaDeviceProp properties;
+		  cudaGetDeviceProperties(&properties, device);
+		  
+	}
+
+
     cudaMalloc( (void**) &dev_input, width*height*3*sizeof(unsigned char));
     cudaMalloc( (void**) &dev_output, width*height*3*sizeof(unsigned char));
 
     /*copy data from host to device memory*/
     cudaMemcpy( dev_input, in_image, width*height*3*sizeof(unsigned char), cudaMemcpyHostToDevice);
  
+//	dim3 gridDims(16,1,1);
+//	dim3 blockDims(512,1,1);
+
     dim3 blockDims(BLOCK_DIMENSION,1,1);
     dim3 gridDims((unsigned int) ceil((double)(width*height*3/blockDims.x)), 1, 1 );
 
+	std::cout << "calling filter" << std::endl;
+	/* kernel invokation */
     cudaBlurFilter<<<gridDims, blockDims>>>(width, height, dev_input, dev_output); 
+	/* kernel invokation */
 
     /*copy results to host*/
     cudaMemcpy(out_image, dev_output, width*height*3*sizeof(unsigned char), cudaMemcpyDeviceToHost);
